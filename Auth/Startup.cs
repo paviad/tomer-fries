@@ -2,12 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using System.Linq;
 using Auth.Data;
 using Auth.Models;
 using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Options;
+using IdentityServer4.Extensions;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -53,16 +55,20 @@ namespace Auth {
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            var builder = services.AddIdentityServer(options => {
+            var builder = services
+                .AddIdentityServer(options => {
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
 
+                    options.IssuerUri = "http://auth/auth";
+
                     // There is confusion on where the UI for login/logout should come from.
                     // One part is from the Quickstart/ folder, another is from Areas/Identity/...
                     // Here we set the logout URL to come from the Quickstart folder, because
                     // it does the auto-redirect out of the box...
+                    options.UserInteraction.LoginUrl = "/Account/Login";
                     options.UserInteraction.LogoutUrl = "/Account/Logout";
 
                     // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
@@ -77,7 +83,7 @@ namespace Auth {
                     var tableConfigs = options.GetType().GetProperties()
                         .Where(x => x.PropertyType == typeof(TableConfiguration)).ToList();
                     tableConfigs.ForEach(x => {
-                        var cv = (TableConfiguration) x.GetValue(options);
+                        var cv = (TableConfiguration)x.GetValue(options);
                         cv.Name = "Is4_" + cv.Name;
                     });
                 })
@@ -88,7 +94,7 @@ namespace Auth {
                     var tableConfigs = options.GetType().GetProperties()
                         .Where(x => x.PropertyType == typeof(TableConfiguration)).ToList();
                     tableConfigs.ForEach(x => {
-                        var cv = (TableConfiguration) x.GetValue(options);
+                        var cv = (TableConfiguration)x.GetValue(options);
                         cv.Name = "Is4_" + cv.Name;
                     });
 
@@ -106,8 +112,9 @@ namespace Auth {
                     // register your IdentityServer with Google at https://console.developers.google.com
                     // enable the Google+ API
                     // set the redirect URI to https://localhost:5001/signin-google
-                    options.ClientId = "copy client ID from Google here";
-                    options.ClientSecret = "copy client secret from Google here";
+
+                    options.ClientId = Configuration.GetValue<string>("Google:ClientId");
+                    options.ClientSecret = Configuration.GetValue<string>("Google:ClientSecret");
                 });
 
 #if DEBUG
@@ -133,6 +140,14 @@ namespace Auth {
 
             app.UsePathBase("/auth");
             app.UseStaticFiles();
+
+            app.Use(async (context, next) => {
+                var origin = Configuration.GetValue<string>("IdentityServer:Origin");
+                var basePath = Configuration.GetValue<string>("IdentityServer:BasePath");
+                context.SetIdentityServerOrigin(origin);
+                context.SetIdentityServerBasePath(basePath);
+                await next();
+            });
 
             app.UseRouting();
             app.UseIdentityServer();

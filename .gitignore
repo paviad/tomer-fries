@@ -339,3 +339,8 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 Web/ClientApp/out.html 
+sql/store 
+compose/docker-compose(secret).yml 
+compose/docker-compose-azure(secret).yml 
+compose/dbpass.txt 
+Web/tmp/ 

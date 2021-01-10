@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+
+  auth:
+    image: starcraft-auth
+    environment: 
+      - "Google__ClientId=********"
+      - "Google__ClientSecret=********"
+
+  web:
+    image: starcraft-web
+
+  api:
+    image: starcraft-api
+
+  nginx:
+    image: starcraft-nginx
+    ports:
+      - "8080:80"
+      - "8081:443"
+
+  sql:
+    image: starcraft-sql
+    volumes:
+      - /run/desktop/mnt/host/c/MyProjects/StarcraftRPG/App/sql/store:/var/opt/mssql/data
+    ports:
+      - "8633:1433"

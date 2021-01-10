@@ -8,6 +8,10 @@ using System.Security.Claims;
 using Auth.Data;
 using Auth.Models;
 using IdentityModel;
+using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.EntityFramework.Options;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +23,41 @@ namespace Auth {
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(connectionString));
+                options.UseSqlServer(connectionString));
+
+            services.AddDbContext<PersistedGrantDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
+            services.AddDbContext<ConfigurationDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
+            services
+                .AddIdentityServer()
+                .AddConfigurationStore<ConfigurationDbContext>(options => {
+                    options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString,
+                        sql => sql.MigrationsAssembly(typeof(Startup).Assembly.FullName));
+                    var tableConfigs = options.GetType().GetProperties()
+                        .Where(x => x.PropertyType == typeof(TableConfiguration)).ToList();
+                    tableConfigs.ForEach(x => {
+                        var cv = (TableConfiguration)x.GetValue(options);
+                        cv.Name = "Is4_" + cv.Name;
+                    });
+                })
+                // this adds the operational data from DB (codes, tokens, consents)
+                .AddOperationalStore<PersistedGrantDbContext>(options => {
+                    options.ConfigureDbContext = builder => builder.UseSqlServer(connectionString,
+                        sql => sql.MigrationsAssembly(typeof(Startup).Assembly.FullName));
+                    var tableConfigs = options.GetType().GetProperties()
+                        .Where(x => x.PropertyType == typeof(TableConfiguration)).ToList();
+                    tableConfigs.ForEach(x => {
+                        var cv = (TableConfiguration)x.GetValue(options);
+                        cv.Name = "Is4_" + cv.Name;
+                    });
+
+                    // this enables automatic token cleanup. this is optional.
+                    options.EnableTokenCleanup = true;
+                });
+
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -28,10 +66,17 @@ namespace Auth {
             using var serviceProvider = services.BuildServiceProvider();
             using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
 
-            var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            var scopeServiceProvider = scope.ServiceProvider;
+
+            InitializeIdentityServer(scopeServiceProvider);
+            InitializeIdentity(scopeServiceProvider);
+        }
+
+        private static void InitializeIdentity(IServiceProvider scopeServiceProvider) {
+            var context = scopeServiceProvider.GetService<ApplicationDbContext>();
             context.Database.Migrate();
 
-            var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var userMgr = scopeServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var alice = userMgr.FindByNameAsync("alice").Result;
             if (alice == null) {
                 alice = new ApplicationUser {
@@ -87,6 +132,41 @@ namespace Auth {
             }
             else {
                 Log.Debug("bob already exists");
+            }
+        }
+
+        private static void InitializeIdentityServer(IServiceProvider svcp) {
+            using var serviceScope = svcp.GetService<IServiceScopeFactory>().CreateScope();
+            serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+
+            var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+            context.Database.Migrate();
+            if (!context.Clients.Any()) {
+                foreach (var client in Config.Clients) {
+                    context.Clients.Add(client.ToEntity());
+                }
+                context.SaveChanges();
+            }
+
+            if (!context.IdentityResources.Any()) {
+                foreach (var resource in Config.IdentityResources) {
+                    context.IdentityResources.Add(resource.ToEntity());
+                }
+                context.SaveChanges();
+            }
+
+            if (!context.ApiScopes.Any()) {
+                foreach (var resource in Config.ApiScopes) {
+                    context.ApiScopes.Add(resource.ToEntity());
+                }
+                context.SaveChanges();
+            }
+
+            if (!context.ApiResources.Any()) {
+                foreach (var resource in Config.ApiResources) {
+                    context.ApiResources.Add(resource.ToEntity());
+                }
+                context.SaveChanges();
             }
         }
     }
