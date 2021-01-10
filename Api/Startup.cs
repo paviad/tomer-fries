@@ -54,7 +54,6 @@ namespace Api {
                         EndSessionEndpoint = "http://auth/auth/connect/endsession",
                         TokenEndpointAuthSigningAlgValuesSupported = { "RS256" },
                         IdTokenSigningAlgValuesSupported = { "RS256" },
-
                     };
                     config.RequireHttpsMetadata = false;
                     config.TokenValidationParameters = new TokenValidationParameters {
@@ -71,6 +70,7 @@ namespace Api {
                     builder.AllowAnyMethod();
                     builder.WithOrigins("http://localhost:4200");
                     builder.WithOrigins("https://localhost:8081");
+                    builder.WithOrigins("https://starcraft-rpg.azurewebsites.net");
                     builder.WithOrigins("http://auth");
                     builder.WithOrigins("https://localhost:44314");
                 });

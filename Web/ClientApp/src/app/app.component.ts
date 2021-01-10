@@ -17,7 +17,7 @@ export class AppComponent {
    }
 
   login() {
-    this.auth.login();
+    this.auth.loginGoogle();
   }
 
   logout() {

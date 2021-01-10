@@ -6,6 +6,8 @@ services:
     environment: 
       - "Google__ClientId=********"
       - "Google__ClientSecret=********"
+      - "IdentityServer__Origin=https://localhost:8081"
+      - "IdentityServer__BasePath=/auth"
 
   web:
     image: starcraft-web
