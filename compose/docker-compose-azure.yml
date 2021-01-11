@@ -3,19 +3,9 @@ services:
 
   auth:
     image: armadillo.azurecr.io/starcraft-rpg/auth
-    environment: 
-      - "Google__ClientId=********"
-      - "Google__ClientSecret=********"
-      - "IdentityServer__Origin=https://starcraft-rpg.azurewebsites.net"
-      - "IdentityServer__BasePath=/auth"
-      - "ConnectionStrings__DefaultConnection=********"
 
   web:
     image: armadillo.azurecr.io/starcraft-rpg/web
-    environment:
-      - "Deployment__Authority=https://starcraft-rpg.azurewebsites.net/auth/"
-      - "Deployment__Web=https://starcraft-rpg.azurewebsites.net/"
-      - "Deployment__Api=https://starcraft-rpg.azurewebsites.net/api/"
 
   api:
     image: armadillo.azurecr.io/starcraft-rpg/api
@@ -25,7 +15,3 @@ services:
     ports:
       - "80:80"
       - "443:443"
-
-#  sql:
-#    image: armadillo.azurecr.io/starcraft-rpg/sql
-#

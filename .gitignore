@@ -340,7 +340,7 @@ ASALocalRun/
 healthchecksdb
 Web/ClientApp/out.html 
 sql/store 
-compose/docker-compose(secret).yml 
-compose/docker-compose-azure(secret).yml 
 compose/dbpass.txt 
 Web/tmp/ 
+compose/env_vars.txt
+compose/env_vars_azure.txt
