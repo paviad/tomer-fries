@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -71,6 +72,16 @@ namespace Api {
                     builder.WithOrigins("https://localhost:44314");
                 });
             });
+
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
+            services.AddDbContext<StarcraftContext>(
+                config => config
+                    .EnableSensitiveDataLogging()
+                    .UseSqlServer(connectionString)
+            );
+
+            services.AddScoped<UsersAdapter>();
         }
 
         private IEnumerable<SecurityKey> KeyResolver(string token, SecurityToken securitytoken, string kid, TokenValidationParameters validationparameters) {

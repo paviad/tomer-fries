@@ -6,8 +6,9 @@ import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BackendState, BACKEND_STATE, BACKEND_STATE_KEY, DefaultBackendState } from './backend-state';
 import { CallbackComponent } from './callback/callback.component';
-import { TestComponent } from './test/test.component';
+import { HomeComponent } from './home/home.component';
 import { AuthInterceptorService } from './auth-interceptor.service';
+import { JexcelDirective } from './jexcel.directive';
 
 let currentBackendState: BackendState;
 
@@ -15,7 +16,8 @@ let currentBackendState: BackendState;
   declarations: [
     AppComponent,
     CallbackComponent,
-    TestComponent
+    HomeComponent,
+    JexcelDirective
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

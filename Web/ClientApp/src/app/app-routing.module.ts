@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CallbackComponent } from './callback/callback.component';
-import { TestComponent } from './test/test.component';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: '/test' },
+  { path: '', pathMatch: 'full', redirectTo: '/home' },
   { path: 'callback', component: CallbackComponent },
-  { path: 'test', component: TestComponent },
+  { path: 'home', component: HomeComponent },
 ];
 
 @NgModule({
