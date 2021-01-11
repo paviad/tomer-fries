@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
@@ -34,11 +35,6 @@ namespace Api {
             var g = new MyEventListener();
             g.EnableEvents(IdentityModelEventSource.Logger, EventLevel.LogAlways);
 
-            var docRetriever = new HttpDocumentRetriever { RequireHttps = false };
-            var keysJson = docRetriever.GetDocumentAsync("http://auth/auth/.well-known/openid-configuration/jwks", default)
-                .Result;
-            var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(keysJson);
-
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(config => {
                     config.Authority = "http://auth/auth";
@@ -58,7 +54,7 @@ namespace Api {
                     config.RequireHttpsMetadata = false;
                     config.TokenValidationParameters = new TokenValidationParameters {
                         ValidateAudience = false,
-                        IssuerSigningKeys = keys.GetSigningKeys(),
+                        IssuerSigningKeyResolver = KeyResolver,
                     };
                     // config.Events = new MyEvents();
                     config.IncludeErrorDetails = true;
@@ -75,6 +71,14 @@ namespace Api {
                     builder.WithOrigins("https://localhost:44314");
                 });
             });
+        }
+
+        private IEnumerable<SecurityKey> KeyResolver(string token, SecurityToken securitytoken, string kid, TokenValidationParameters validationparameters) {
+            var docRetriever = new HttpDocumentRetriever { RequireHttps = false };
+            var keysJson = docRetriever.GetDocumentAsync("http://auth/auth/.well-known/openid-configuration/jwks", default)
+                .Result;
+            var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(keysJson).GetSigningKeys();
+            return keys;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
