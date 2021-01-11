@@ -11,5 +11,6 @@ namespace Api {
         }
         
         public DbSet<DAL.UserData> UserDatas { get; set; }
+        public DbSet<DAL.AppUser> AppUsers { get; set; }
     }
 }

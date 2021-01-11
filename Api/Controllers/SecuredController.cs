@@ -22,18 +22,34 @@ namespace Api.Controllers {
             _usersAdapter = usersAdapter;
         }
 
-        public async Task<string> GetData(string key = "general") {
+        public async Task<IActionResult> GetData(string key = "general", Guid? userId = null) {
             var currentUser = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var admin = User.FindFirst("admin")?.Value;
             var guid = Guid.Parse(currentUser);
+            if (admin != "True" && (userId ?? guid) != guid) {
+                return Unauthorized();
+            }
             var rc = await _usersAdapter.EnsureGetUserData(guid, key);
-            return rc.JsonData;
+            return Content(rc.JsonData);
         }
 
         [HttpPost]
-        public async Task SetData([FromBody] SetDataModel model) {
+        public async Task<IActionResult> SetData([FromBody] SetDataModel model) {
             var currentUser = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var admin = User.FindFirst("admin")?.Value;
             var guid = Guid.Parse(currentUser);
+            if (admin != "True" && (model.UserId ?? guid) != guid) {
+                return Unauthorized();
+            }
             await _usersAdapter.EnsureSetUserData(guid, model.Data, model.Key ?? "general");
+            return NoContent();
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "Admin")]
+        public async Task<IEnumerable<User>> GetUsers() {
+            var userIds = await _usersAdapter.GetUsers();
+            return userIds;
         }
     }
 }

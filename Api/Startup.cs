@@ -82,6 +82,10 @@ namespace Api {
             );
 
             services.AddScoped<UsersAdapter>();
+
+            services.AddAuthorization(options => {
+                options.AddPolicy("Admin", policy => policy.RequireClaim("Admin", "True"));
+            });
         }
 
         private IEnumerable<SecurityKey> KeyResolver(string token, SecurityToken securitytoken, string kid, TokenValidationParameters validationparameters) {

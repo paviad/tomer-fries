@@ -8,7 +8,6 @@ import { BackendState } from './backend-state';
   providedIn: 'root'
 })
 export class SecuredService {
-
   constructor(
     @Inject(PLATFORM_ID) private platformId,
     private backendState: BackendState,
@@ -35,6 +34,10 @@ export class SecuredService {
       data: JSON.stringify(json),
     };
     return this.http.post<void>(this.url('SetData'), body);
+  }
+
+  getUsers(): Observable<string[]> {
+    return this.http.get<string[]>(this.url('GetUsers'));
   }
 }
 

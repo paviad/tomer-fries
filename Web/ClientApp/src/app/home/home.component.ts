@@ -1,13 +1,13 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { User } from 'oidc-client';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { JexcelDirective } from '../jexcel.directive';
 import { SecuredService } from '../secured.service';
 
 @Component({
-  selector: 'app-test',
+  selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   loading = true;
   loaded = false;
   user$: Observable<User>
+  otherUsers$: Observable<string[]>;
 
   constructor(
     private authSvc: AuthService,
@@ -36,6 +37,13 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         tap(r => this.saving = false)
       ).subscribe()
     );
+
+    this.subs.push(
+      this.user$.pipe(
+        map(r => r.profile && r.profile.admin === 'True'),
+        distinctUntilChanged(),
+      ).subscribe(r => this.getAdminData())
+    )
   }
 
   ngOnDestroy(): void {
@@ -54,6 +62,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         this.loaded = false;
       }
     });
+  }
+
+  getAdminData() {
+    this.otherUsers$ = this.securedSvc.getUsers();
   }
 
   getSecuredData() {

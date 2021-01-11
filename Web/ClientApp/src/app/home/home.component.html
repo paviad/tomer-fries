@@ -1,10 +1,15 @@
-<div *ngIf="user$ | async; else login">
-    <div class="saving" *ngIf="saving">Saving...</div>
-    <div class="saving" *ngIf="loading">Loading...</div>
-    <div *ngIf="loaded" #theSheet="excel" (appExcel)="excelChange($event)">
-
+<div class="container">
+    <div class="side" *ngIf="otherUsers$ | async as otherUsers">
+        {{otherUsers | json}}
     </div>
+    <div class="main" *ngIf="user$ | async; else login">
+        <div class="saving" *ngIf="saving">Saving...</div>
+        <div class="saving" *ngIf="loading">Loading...</div>
+        <div *ngIf="loaded" #theSheet="excel" (appExcel)="excelChange($event)">
+
+        </div>
+    </div>
+    <ng-template #login>
+        <h2>Please login first</h2>
+    </ng-template>
 </div>
-<ng-template #login>
-    <h2>Please login first</h2>
-</ng-template>

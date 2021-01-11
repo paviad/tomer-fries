@@ -4,16 +4,21 @@
 
 using System;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Auth.Data;
 using Auth.Models;
 using IdentityServer4;
+using IdentityServer4.AspNetIdentity;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Options;
 using IdentityServer4.Extensions;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -129,7 +134,7 @@ namespace Auth {
             services.AddRazorPages();
         }
 
-        public void Configure(IApplicationBuilder app) {
+        public void Configure(IApplicationBuilder app, IProfileService profileService) {
             if (Environment.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
