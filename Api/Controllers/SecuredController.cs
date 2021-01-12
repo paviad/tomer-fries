@@ -14,7 +14,7 @@ namespace Api.Controllers {
     [Route("[controller]/[action]")]
     [Authorize]
     public class SecuredController : ControllerBase {
-        private ILogger<SecuredController> _logger;
+        private readonly ILogger<SecuredController> _logger;
         private readonly UsersAdapter _usersAdapter;
 
         public SecuredController(ILogger<SecuredController> logger, UsersAdapter usersAdapter) {
@@ -26,10 +26,13 @@ namespace Api.Controllers {
             var currentUser = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             var admin = User.FindFirst("admin")?.Value;
             var guid = Guid.Parse(currentUser);
-            if (admin != "True" && (userId ?? guid) != guid) {
+            var requestedGuid = userId ?? guid;
+            if (admin != "True" && requestedGuid != guid) {
                 return Unauthorized();
             }
-            var rc = await _usersAdapter.EnsureGetUserData(guid, key);
+
+            _logger.LogInformation($"Getting data for user id {requestedGuid}");
+            var rc = await _usersAdapter.EnsureGetUserData(requestedGuid, key);
             return Content(rc.JsonData);
         }
 
@@ -38,15 +41,16 @@ namespace Api.Controllers {
             var currentUser = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             var admin = User.FindFirst("admin")?.Value;
             var guid = Guid.Parse(currentUser);
-            if (admin != "True" && (model.UserId ?? guid) != guid) {
+            var requestedGuid = model.UserId ?? guid;
+            if (admin != "True" && requestedGuid != guid) {
                 return Unauthorized();
             }
-            await _usersAdapter.EnsureSetUserData(guid, model.Data, model.Key ?? "general");
+            await _usersAdapter.EnsureSetUserData(requestedGuid, model.Data, model.Key ?? "general");
             return NoContent();
         }
 
         [HttpGet]
-        [Authorize(Policy = "Admin")]
+        // [Authorize(Policy = "Admin")] // everyone's an admin for now
         public async Task<IEnumerable<User>> GetUsers() {
             var userIds = await _usersAdapter.GetUsers();
             return userIds;

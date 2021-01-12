@@ -70,7 +70,6 @@ export class AuthService {
 
   refreshUser() {
     this.getUser().subscribe(r => {
-      console.log('user', r);
       return this.pUser.next(r);
     });
   }

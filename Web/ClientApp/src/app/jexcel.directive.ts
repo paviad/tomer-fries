@@ -15,14 +15,12 @@ export class JexcelDirective implements AfterViewInit {
   constructor(
     @Inject(PLATFORM_ID) private platformId,
     private el: ElementRef) {
-    console.log('global jexcel', jexcel);
   }
 
   ngAfterViewInit(): void {
     if (isPlatformServer(this.platformId)) {
       return;
     }
-    console.log('el', this.el);
     this.initJexcel();
     this.jsheet.onafterchanges = (e, r) => this.onChange(e, r);
   }
@@ -31,8 +29,6 @@ export class JexcelDirective implements AfterViewInit {
     this.jsheet = jexcel(this.el.nativeElement, {
       minDimensions: [20, 25],
     });
-
-    console.log('jsheet', this.jsheet);
   }
 
   onChange(e, r) {

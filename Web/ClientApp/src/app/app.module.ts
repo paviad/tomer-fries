@@ -37,6 +37,6 @@ export class AppModule {
     @Optional() @Inject(BACKEND_STATE) providedBackendState: BackendState,
   ) {
     currentBackendState = ssrState.get(BACKEND_STATE_KEY, providedBackendState || DefaultBackendState);
-    console.error('app.module currentBackendState', currentBackendState);
+    console.log('app.module currentBackendState', currentBackendState);
   }
 }

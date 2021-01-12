@@ -1,6 +1,8 @@
 <div class="container">
     <div class="side" *ngIf="otherUsers$ | async as otherUsers">
-        {{otherUsers | json}}
+        <div *ngFor="let l of otherUsers">
+            <a class="userlink" [class.active]="this.userId===l.id" [routerLink]="['/home',{userId:l.id}]">{{l.name}}</a>
+        </div>
     </div>
     <div class="main" *ngIf="user$ | async; else login">
         <div class="saving" *ngIf="saving">Saving...</div>

@@ -1,9 +1,11 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { User } from 'oidc-client';
-import { Observable, Subject, Subscription } from 'rxjs';
-import { distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
+import { EMPTY, Observable, Subject, Subscription } from 'rxjs';
+import { catchError, distinctUntilChanged, filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { JexcelDirective } from '../jexcel.directive';
+import { AppUser } from '../models/app-user';
 import { SecuredService } from '../secured.service';
 
 @Component({
@@ -21,29 +23,66 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   loading = true;
   loaded = false;
   user$: Observable<User>
-  otherUsers$: Observable<string[]>;
+  otherUsers$: Observable<AppUser[]>;
+  userId: string;
+  loadedData: string;
 
   constructor(
-    private authSvc: AuthService,
+    authSvc: AuthService,
+    private route: ActivatedRoute,
     private securedSvc: SecuredService) {
     this.user$ = authSvc.user$;
   }
 
   ngOnInit(): void {
-    this.subs.push(
-      this.newData$.pipe(
-        tap(r => this.saving = true),
-        switchMap(r => this.securedSvc.setData(r)),
-        tap(r => this.saving = false)
-      ).subscribe()
+
+    const userId$ = this.route.paramMap.pipe(
+      withLatestFrom(this.user$),
+      filter(([_, user]) => !!user),
+      map(([r, _]) => r),
+      map(r => r.get('userId')),
+      tap(r => this.userId = r)
     );
 
+    const saveExcelData$ = this.newData$.pipe(
+      withLatestFrom(userId$),
+      tap(r => this.saving = true),
+      switchMap(([r, userId]) => this.securedSvc.setData(r, null, userId)),
+      tap(r => this.saving = false));
+
+    const adminData$ = this.user$.pipe(
+      filter(r => !!r),
+      map(r => r.profile /*&& r.profile.admin === 'True'*/), // everyone's an admin for now
+      distinctUntilChanged(),
+      switchMap(r => this.securedSvc.getUsers())
+    );
+
+    const getExcelData$ = userId$.pipe(
+      tap(r => {
+        this.loading = true;
+        this.loaded = false;
+      }),
+      switchMap(userId => this.securedSvc.getData(null, userId).pipe(
+        tap(r => {
+          this.loading = false;
+          this.loaded = true;
+          setTimeout(() => this.theSheet.setData(r), 0);
+        }),
+        catchError(err => {
+          this.loading = false;
+          this.loaded = false;
+          return EMPTY;
+        })
+      )),
+    );
+
+    this.otherUsers$ = adminData$;
+
     this.subs.push(
-      this.user$.pipe(
-        map(r => r.profile && r.profile.admin === 'True'),
-        distinctUntilChanged(),
-      ).subscribe(r => this.getAdminData())
-    )
+      saveExcelData$.subscribe(),
+      // adminData$.subscribe(), // no need to subscribe here, the template uses it with the |async pipe
+      getExcelData$.subscribe()
+    );
   }
 
   ngOnDestroy(): void {
@@ -51,30 +90,16 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.securedSvc.getData().subscribe({
-      next: r => {
-        this.loading = false;
-        this.loaded = true;
-        setTimeout(() => this.theSheet.setData(r), 0);
-      },
-      error: err => {
-        this.loading = false;
-        this.loaded = false;
-      }
-    });
+    if (this.loadedData) {
+      this.theSheet.setData(this.loadedData);
+    }
   }
 
-  getAdminData() {
-    this.otherUsers$ = this.securedSvc.getUsers();
-  }
-
-  getSecuredData() {
-    this.securedSvc.getData().subscribe(
-      {
-        next: r => this.securedData = r,
-        error: r => this.securedData = 'error',
-      }
-    );
+  setLoadedData(json: string) {
+    this.loadedData = json;
+    if (this.theSheet) {
+      this.theSheet.setData(json);
+    }
   }
 
   excelChange(json: string) {
