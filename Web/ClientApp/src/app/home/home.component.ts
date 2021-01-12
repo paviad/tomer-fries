@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const adminData$ = this.user$.pipe(
       filter(r => !!r),
-      map(r => r.profile /*&& r.profile.admin === 'True'*/), // everyone's an admin for now
+      map(r => !!r.profile /*&& r.profile.admin === 'True'*/), // everyone's an admin for now
       distinctUntilChanged(),
       switchMap(r => this.securedSvc.getUsers())
     );
