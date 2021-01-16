@@ -1,17 +1,72 @@
-<div class="container">
-    <div class="side" *ngIf="otherUsers$ | async as otherUsers">
-        <div *ngFor="let l of otherUsers">
-            <a class="userlink" [class.active]="this.userId===l.id" [routerLink]="['/home',{userId:l.id}]">{{l.name}}</a>
+<div [ngSwitch]="orderState" class="container" @parent>
+    <div *ngSwitchCase="0" class="sizes center" @flyInOut>
+        <div (click)="clickOrder(0)">
+            <div class="img">
+                <img src="assets/fries.png" width="100">
+            </div>
+            <span>קטן</span>
+        </div>
+        <div (click)="clickOrder(1)">
+            <div class="img">
+                <img src="assets/fries.png" width="150">
+            </div>
+            <span>בינוני</span>
+        </div>
+        <div (click)="clickOrder(2)">
+            <div class="img">
+                <img src="assets/fries.png" width="200">
+            </div>
+            <span>גדול</span>
         </div>
     </div>
-    <div class="main" *ngIf="user$ | async; else login">
-        <div class="saving" *ngIf="saving">Saving...</div>
-        <div class="saving" *ngIf="loading">Loading...</div>
-        <div *ngIf="loaded" #theSheet="excel" (appExcel)="excelChange($event)">
 
+    <div *ngSwitchCase="1" class="address center" @flyInOut>
+        <form class="example-form" novalidate standalone>
+            <mat-radio-group name="tomer-fries-crispiness" [(ngModel)]="crispiness" aria-label="Select an option">
+                <mat-radio-button value="1">קריספי</mat-radio-button>
+                <mat-radio-button value="2">רך</mat-radio-button>
+            </mat-radio-group>
+
+            <mat-form-field class="example-full-width">
+                <mat-label>לאן לשלוח?</mat-label>
+                <input matInput name="tomer-fries-address" placeholder="כתובת או מספר דירה" value=""
+                    [(ngModel)]="address">
+            </mat-form-field>
+
+            <mat-form-field class="example-full-width">
+                <mat-label>הערות לשליח</mat-label>
+                <textarea name="tomer-fries-notes" matInput placeholder="" [(ngModel)]="notes"></textarea>
+            </mat-form-field>
+
+            <button type="button" [disabled]="!isStep1Valid()" mat-raised-button color="accent" (click)="clickSummary()">עבור לשלב הבא</button>
+        </form>
+    </div>
+
+    <div *ngSwitchCase="2" class="confirm center" @flyInOut>
+        <h1>סיכום ההזמנה</h1>
+        <div class="field">
+            <h2>גודל</h2>
+            <div class="data">{{getSize()}} - {{getCrispiness()}}</div>
+            <h2>כתובת</h2>
+            <div class="data">{{address}}</div>
+            <h2>מחיר</h2>
+            <div class="data">{{getPrice()}}</div>
+            <h2>הערות לשליח</h2>
+            <div class="data">{{notes}}</div>
+        </div>
+        <div>
+            <button mat-raised-button color="accent" (click)="confirmOrder()">אישור הזמנה!</button>
         </div>
     </div>
-    <ng-template #login>
-        <h2>Please login first</h2>
-    </ng-template>
+
+    <div *ngSwitchCase="3" class="track center" @flyInOut>
+        <h1>הזמנתך התקבלה בהצלחה!</h1>
+        <h2>מעקב הזמנה</h2>
+        <div class="tracking">
+            <div class="tracking-step" [class.active]="trackingState===0" [class.complete]="trackingState>0">ממתין בתור</div>
+            <div class="tracking-step" [class.active]="trackingState===1" [class.complete]="trackingState>1">בהכנה</div>
+            <div class="tracking-step" [class.active]="trackingState===2" [class.complete]="trackingState>2">בדרך</div>
+            <div class="tracking-step" [class.active]="trackingState===3" [class.complete]="trackingState>3">הושלם!</div>
+        </div>
+    </div>
 </div>
