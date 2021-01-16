@@ -35,6 +35,7 @@ export class HomeComponent implements OnInit {
 
   crispiness?: number;
   address: string;
+  phoneNumber: string;
   notes: string;
 
   trackingState = 0;
@@ -79,6 +80,9 @@ export class HomeComponent implements OnInit {
 
   isStep1Valid() {
     if (!this.address) {
+      return false;
+    }
+    if (!this.phoneNumber) {
       return false;
     }
     if (!this.crispiness) {

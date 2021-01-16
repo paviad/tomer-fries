@@ -18,12 +18,21 @@
 .sizes {
     .small {
         flex-basis: 22%;
+        .img {
+            background-position-x: 7px;
+        }
     }
     .medium {
         flex-basis: 33%;
+        .img {
+            background-position-x: 10px;
+        }
     }
     .large {
         flex-basis: 44%;
+        .img {
+            background-position-x: 14px;
+        }
     }
     & > div {
         display: flex;
@@ -84,6 +93,10 @@
 
     button {
         margin-top: 40px;
+    }
+
+    h2 {
+        margin: 10px 0;
     }
 }
 

@@ -28,6 +28,12 @@
             </mat-form-field>
 
             <mat-form-field class="example-full-width">
+                <mat-label>מס' טלפון לאישור</mat-label>
+                <input matInput name="tomer-fries-phone" placeholder="דוגמא: 053-888888" value=""
+                    [(ngModel)]="phoneNumber">
+            </mat-form-field>
+
+            <mat-form-field class="example-full-width">
                 <mat-label>הערות לשליח</mat-label>
                 <textarea name="tomer-fries-notes" matInput placeholder="" [(ngModel)]="notes"></textarea>
             </mat-form-field>
@@ -43,9 +49,11 @@
             <div class="data">{{getSize()}} - {{getCrispiness()}}</div>
             <h2>כתובת</h2>
             <div class="data">{{address}}</div>
+            <h2>טלפון</h2>
+            <div class="data">{{phoneNumber}}</div>
             <h2>מחיר</h2>
             <div class="data">{{getPrice()}}</div>
-            <h2>הערות לשליח</h2>
+            <h2>הערות</h2>
             <div class="data">{{notes}}</div>
         </div>
         <div>
@@ -57,7 +65,7 @@
         <h1>הזמנתך התקבלה בהצלחה!</h1>
         <h2>מעקב הזמנה</h2>
         <div class="tracking">
-            <div class="tracking-step" [class.active]="trackingState===0" [class.complete]="trackingState>0">ממתין בתור</div>
+            <div class="tracking-step" [class.active]="trackingState===0" [class.complete]="trackingState>0">ממתין</div>
             <div class="tracking-step" [class.active]="trackingState===1" [class.complete]="trackingState>1">בהכנה</div>
             <div class="tracking-step" [class.active]="trackingState===2" [class.complete]="trackingState>2">בדרך</div>
             <div class="tracking-step" [class.active]="trackingState===3" [class.complete]="trackingState>3">הושלם!</div>
