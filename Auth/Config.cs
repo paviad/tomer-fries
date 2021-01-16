@@ -10,13 +10,13 @@ namespace Auth {
         public static IEnumerable<IdentityResource> IdentityResources =>
             new IdentityResource[] {
                 new IdentityResources.OpenId(),
+                new IdentityResources.Email(),
                 new IdentityResources.Profile()
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
             new[] {
-                new ApiScope("scope1"),
-                new ApiScope("scope2")
+                new ApiScope("api"),
             };
 
         public static IEnumerable<ApiResource> ApiResources =>
@@ -44,13 +44,13 @@ namespace Auth {
 
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    RedirectUris = {"https://localhost:44314/signin-oidc", "https://localhost:44314/silent-renew.html"},
-                    FrontChannelLogoutUri = "https://localhost:44314/signout-oidc",
-                    PostLogoutRedirectUris = {"https://localhost:44314/"},
-                    AllowedCorsOrigins = {"https://localhost:44314/"},
+                    RedirectUris = {"https://localhost:8081/callback", "https://localhost:8081/silent-renew.html"},
+                    FrontChannelLogoutUri = "https://localhost:8081/signout-oidc",
+                    PostLogoutRedirectUris = {"https://localhost:8081/"},
+                    AllowedCorsOrigins = {"https://localhost:8081"},
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = {"openid", "profile", "scope2"}
+                    AllowedScopes = {"openid", "profile", "email", "api"}
                 }
             };
     }
