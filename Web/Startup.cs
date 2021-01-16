@@ -65,9 +65,9 @@ namespace Web {
 
                 spa.Options.SourcePath = "ClientApp";
 
-                if (env.IsDevelopment()) {
-                    spa.UseAngularCliServer("start");
-                }
+                //if (env.IsDevelopment()) {
+                //    spa.UseAngularCliServer("start");
+                //}
             });
         }
     }

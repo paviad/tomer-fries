@@ -1,1 +1,1 @@
-docker build . -t starcraft-nginx
+docker build . -t tomerfries-nginx

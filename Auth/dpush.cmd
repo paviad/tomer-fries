@@ -1,1 +1,1 @@
-docker push armadillo.azurecr.io/starcraft-rpg/auth
+docker push armadillo.azurecr.io/tomerfries/auth

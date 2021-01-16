@@ -1,3 +1,3 @@
-docker push armadillo.azurecr.io/starcraft-rpg/web
-docker push armadillo.azurecr.io/starcraft-rpg/api
-docker push armadillo.azurecr.io/starcraft-rpg/auth
+docker push armadillo.azurecr.io/tomerfries/web
+docker push armadillo.azurecr.io/tomerfries/api
+docker push armadillo.azurecr.io/tomerfries/auth

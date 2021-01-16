@@ -2,16 +2,16 @@ version: "3.7"
 services:
 
   auth:
-    image: armadillo.azurecr.io/starcraft-rpg/auth
+    image: armadillo.azurecr.io/tomerfries/auth
 
   web:
-    image: armadillo.azurecr.io/starcraft-rpg/web
+    image: armadillo.azurecr.io/tomerfries/web
 
   api:
-    image: armadillo.azurecr.io/starcraft-rpg/api
+    image: armadillo.azurecr.io/tomerfries/api
 
   nginx:
-    image: armadillo.azurecr.io/starcraft-rpg/nginx
+    image: armadillo.azurecr.io/tomerfries/nginx
     ports:
       - "80:80"
       - "443:443"

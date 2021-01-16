@@ -1,1 +1,1 @@
-docker build . -f Dockerfile-azure -t armadillo.azurecr.io/starcraft-rpg/nginx
+docker build . -f Dockerfile-azure -t armadillo.azurecr.io/tomerfries/nginx

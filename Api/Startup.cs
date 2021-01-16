@@ -67,7 +67,8 @@ namespace Api {
                     builder.AllowAnyMethod();
                     builder.WithOrigins("http://localhost:4200");
                     builder.WithOrigins("https://localhost:8081");
-                    builder.WithOrigins("https://starcraft-rpg.azurewebsites.net");
+                    builder.WithOrigins("https://tomer-fries.azurewebsites.net");
+                    builder.WithOrigins("https://tomerfries.com");
                     builder.WithOrigins("http://auth");
                     builder.WithOrigins("https://localhost:44314");
                 });

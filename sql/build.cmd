@@ -1,1 +1,1 @@
-docker build . -t starcraft-sql
+docker build . -t tomerfries-sql

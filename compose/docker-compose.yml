@@ -2,25 +2,25 @@ version: "3.7"
 services:
 
   auth:
-    image: starcraft-auth
+    image: tomerfries-auth
     env_file:
       - env_vars.txt
 
   web:
-    image: starcraft-web
+    image: tomerfries-web
 
   api:
-    image: starcraft-api
+    image: tomerfries-api
 
   nginx:
-    image: starcraft-nginx
+    image: tomerfries-nginx
     ports:
       - "8080:80"
       - "8081:443"
 
   sql:
-    image: starcraft-sql
+    image: tomerfries-sql
     volumes:
-      - /run/desktop/mnt/host/c/MyProjects/StarcraftRPG/App/sql/store:/var/opt/mssql/data
+      - /run/desktop/mnt/host/c/MyProjects/Tomerfries/App/sql/store:/var/opt/mssql/data
     ports:
       - "8633:1433"
