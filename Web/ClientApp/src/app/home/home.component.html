@@ -1,21 +1,15 @@
 <div [ngSwitch]="orderState" class="container" @parent>
     <div *ngSwitchCase="0" class="sizes center" @flyInOut>
-        <div (click)="clickOrder(0)">
-            <div class="img">
-                <img src="assets/fries.png" width="100">
-            </div>
+        <div (click)="clickOrder(0)" class="small">
+            <div class="img"></div>
             <span>קטן</span>
         </div>
-        <div (click)="clickOrder(1)">
-            <div class="img">
-                <img src="assets/fries.png" width="150">
-            </div>
+        <div (click)="clickOrder(1)" class="medium">
+            <div class="img"></div>
             <span>בינוני</span>
         </div>
-        <div (click)="clickOrder(2)">
-            <div class="img">
-                <img src="assets/fries.png" width="200">
-            </div>
+        <div (click)="clickOrder(2)" class="large">
+            <div class="img"></div>
             <span>גדול</span>
         </div>
     </div>

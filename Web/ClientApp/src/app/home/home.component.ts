@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit {
   trackingState = 0;
 
   constructor() {
-    interval(1000).subscribe(r => this.trackingState = (this.trackingState + 1) % 4);
+    // interval(1000).subscribe(r => this.trackingState = (this.trackingState + 1) % 4);
   }
 
   ngOnInit(): void {

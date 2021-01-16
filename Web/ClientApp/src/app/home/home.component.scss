@@ -1,5 +1,9 @@
 .container {
     position: relative;
+    width: 400px;
+    margin: auto;
+    overflow: hidden;
+    height: 100%;
 }
 
 .center {
@@ -7,13 +11,20 @@
     display: flex;
     align-items: stretch;
     justify-content: center;
-    width: 400px;
     position: absolute;
-    top: 0;
-    left: calc(50% - 200px);
+    width: 100%;
 }
 
 .sizes {
+    .small {
+        flex-basis: 22%;
+    }
+    .medium {
+        flex-basis: 33%;
+    }
+    .large {
+        flex-basis: 44%;
+    }
     & > div {
         display: flex;
         flex-direction: column;
@@ -25,6 +36,11 @@
             align-items: center;
             justify-content: center;
             flex-grow: 1;
+            background-image: url("/assets/fries.png");
+            height: 200px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
 
         span {
@@ -76,7 +92,7 @@
     .tracking {
         display: flex;
         .tracking-step {
-            width: 80px;
+            flex-basis: 25%;
             border-top: 1px solid white;
             border-bottom: 1px solid white;
             padding: 5px;
@@ -112,5 +128,11 @@
                 border-bottom-left-radius: 10px;
             }
         }
+    }
+}
+
+@media (max-width: 700px) {
+    .container {
+        width: 100%;
     }
 }
