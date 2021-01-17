@@ -7,6 +7,8 @@ import {
   transition,
 } from '@angular/animations';
 import { interval, Subject } from 'rxjs';
+import { DataService } from '../data.service';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-home',
@@ -40,7 +42,9 @@ export class HomeComponent implements OnInit {
 
   trackingState = 0;
 
-  constructor() {
+  constructor(
+    private auth: AuthService,
+    private svc: DataService) {
     // interval(1000).subscribe(r => this.trackingState = (this.trackingState + 1) % 4);
   }
 
@@ -93,5 +97,21 @@ export class HomeComponent implements OnInit {
 
   confirmOrder() {
     this.orderState = 3;
+  }
+
+  test() {
+    this.svc.newOrder().subscribe();
+  }
+
+  test2() {
+    this.svc.getAllOrders().subscribe();
+  }
+
+  login() {
+    this.auth.loginGoogle();
+  }
+
+  logout() {
+    this.auth.logout();
   }
 }

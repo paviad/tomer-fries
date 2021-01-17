@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
-using System.IdentityModel.Tokens.Jwt;
-using System.Threading;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Data;
 using Microsoft.AspNetCore.Authentication;
@@ -14,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -36,10 +33,16 @@ namespace Api {
             IdentityModelEventSource.Logger.LogLevel = EventLevel.LogAlways;
             IdentityModelEventSource.ShowPII = true;
 
-            var g = new MyEventListener();
-            g.EnableEvents(IdentityModelEventSource.Logger, EventLevel.LogAlways);
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication("JwtThenAnon")
+                .AddPolicyScheme("JwtThenAnon", "Jwt if available, Anon otherwise", options => {
+                    options.ForwardDefaultSelector = context => {
+                        var isAuthJwt = context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme).Result;
+                        return isAuthJwt.Succeeded ? JwtBearerDefaults.AuthenticationScheme : "AnonCookie";
+                    };
+                })
+                .AddCookie("AnonCookie", options => {
+                    options.Cookie.Path = "/";
+                })
                 .AddJwtBearer(config => {
                     config.Authority = "http://auth/auth";
                     config.MetadataAddress = "http://auth/auth/.well-known/openid-configuration";
@@ -60,8 +63,15 @@ namespace Api {
                         ValidateAudience = false,
                         IssuerSigningKeyResolver = KeyResolver,
                     };
-                    // config.Events = new MyEvents();
+
                     config.IncludeErrorDetails = true;
+
+                    config.Events = new JwtBearerEvents {
+                        OnTokenValidated = context => {
+                            ((ClaimsIdentity) context.Principal?.Identity)?.AddClaim(new Claim("LoggedIn", "True"));
+                            return Task.CompletedTask;
+                        },
+                    };
                 });
 
             services.AddCors(config => {
@@ -91,11 +101,6 @@ namespace Api {
                 options.AddPolicy("Admin", policy => policy.RequireClaim("Admin", "True"));
             });
 
-            services.AddAuthentication()
-                .AddCookie("AnonCookie", options => {
-                    options.Cookie.Path = "/";
-                });
-
             services.AddDataProtection()
                 .PersistKeysToDbContext<StarcraftContext>()
                 .SetApplicationName("TomerFries");
@@ -117,12 +122,6 @@ namespace Api {
 
             app.UseAuthentication();
 
-            app.Use(async (context, req) => {
-                var isAuth = await context.AuthenticateAsync("AnonCookie");
-                Console.WriteLine($"----------------request 2 {isAuth.Succeeded}");
-                await req.Invoke();
-            });
-
             app.UseHttpsRedirection();
 
             app.UseCors("defaultAng");
@@ -133,43 +132,6 @@ namespace Api {
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-        }
-    }
-
-    public class MyEventListener : EventListener {
-        protected override void OnEventWritten(EventWrittenEventArgs e) {
-            foreach (object payload in e.Payload) {
-                Console.WriteLine($"[{e.EventName}] {e.Message} | {payload}");
-            }
-            base.OnEventWritten(e);
-        }
-    }
-
-    public class MyEvents : JwtBearerEvents {
-        public override Task MessageReceived(MessageReceivedContext context) {
-            var token = context.HttpContext.Request.Headers["Authorization"].ToString();
-            context.Token = token.Substring(7);
-            Console.WriteLine($"MessageReceived--------------------------\n{token}\n\n");
-            return base.MessageReceived(context);
-        }
-
-        public override Task AuthenticationFailed(AuthenticationFailedContext context) {
-            Console.WriteLine($"AuthenticationFailed--------------------------\n{context.Exception}\n\n");
-            return base.AuthenticationFailed(context);
-        }
-
-        public override Task Challenge(JwtBearerChallengeContext context) {
-            Console.WriteLine("Challenge--------------------------");
-            return base.Challenge(context);
-        }
-
-        public override Task Forbidden(ForbiddenContext context) {
-            Console.WriteLine("Forbidden--------------------------");
-            return base.Forbidden(context);
-        }
-        public override Task TokenValidated(TokenValidatedContext context) {
-            Console.WriteLine("TokenValidated--------------------------");
-            return base.TokenValidated(context);
         }
     }
 }

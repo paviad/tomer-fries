@@ -1,3 +1,7 @@
+<button (click)="test()">test</button>
+<button (click)="test2()">admin test</button>
+<button (click)="login()">login</button>
+<button (click)="logout()">logout</button>
 <div [ngSwitch]="orderState" class="container" @parent>
     <div *ngSwitchCase="0" class="sizes center" @flyInOut>
         <div (click)="clickOrder(0)" class="small">
