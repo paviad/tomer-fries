@@ -1,15 +1,15 @@
 <div [ngSwitch]="orderState" class="container" @parent>
     <div *ngSwitchCase="0" class="sizes center" @flyInOut>
         <div (click)="clickOrder(0)" class="small">
-            <div class="img"></div>
+            <div class="img"><span>&#8362;5</span></div>
             <span>קטן</span>
         </div>
         <div (click)="clickOrder(1)" class="medium">
-            <div class="img"></div>
+            <div class="img"><span>&#8362;10</span></div>
             <span>בינוני</span>
         </div>
         <div (click)="clickOrder(2)" class="large">
-            <div class="img"></div>
+            <div class="img"><span>&#8362;15</span></div>
             <span>גדול</span>
         </div>
     </div>
@@ -52,7 +52,7 @@
             <h2>טלפון</h2>
             <div class="data">{{phoneNumber}}</div>
             <h2>מחיר</h2>
-            <div class="data">{{getPrice()}}</div>
+            <div class="data">&#8362;{{getPrice()}}</div>
             <h2>הערות</h2>
             <div class="data">{{notes}}</div>
         </div>

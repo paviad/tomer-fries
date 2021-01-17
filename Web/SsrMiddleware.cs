@@ -59,10 +59,10 @@ namespace Web {
             var stdErr = process.StandardError;
             var stdOut = process.StandardOutput;
 
-            var outPath = Path.Combine(workingDirectory, "out.html");
-            var result = File.Exists(outPath) ? await File.ReadAllTextAsync(outPath) : "";
             var stdOutResult = await stdOut.ReadToEndAsync();
             var stdErrResult = await stdErr.ReadToEndAsync();
+            var outPath = Path.Combine(workingDirectory, "out.html");
+            var result = File.Exists(outPath) ? await File.ReadAllTextAsync(outPath) : "";
             Debug.Print(processStartInfo.Arguments);
             Debug.Print(stdOutResult);
             Debug.Print(stdErrResult);

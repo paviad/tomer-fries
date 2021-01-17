@@ -4,8 +4,11 @@ using System.Diagnostics.Tracing;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
 using System.Threading.Tasks;
+using Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -87,6 +90,15 @@ namespace Api {
             services.AddAuthorization(options => {
                 options.AddPolicy("Admin", policy => policy.RequireClaim("Admin", "True"));
             });
+
+            services.AddAuthentication()
+                .AddCookie("AnonCookie", options => {
+                    options.Cookie.Path = "/";
+                });
+
+            services.AddDataProtection()
+                .PersistKeysToDbContext<StarcraftContext>()
+                .SetApplicationName("TomerFries");
         }
 
         private IEnumerable<SecurityKey> KeyResolver(string token, SecurityToken securitytoken, string kid, TokenValidationParameters validationparameters) {
@@ -102,6 +114,14 @@ namespace Api {
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseAuthentication();
+
+            app.Use(async (context, req) => {
+                var isAuth = await context.AuthenticateAsync("AnonCookie");
+                Console.WriteLine($"----------------request 2 {isAuth.Succeeded}");
+                await req.Invoke();
+            });
 
             app.UseHttpsRedirection();
 

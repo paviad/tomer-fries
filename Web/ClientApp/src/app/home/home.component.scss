@@ -20,18 +20,29 @@
         flex-basis: 22%;
         .img {
             background-position-x: 7px;
+            span {
+                margin-top: 30px;
+                font-size: 20px;
+            }
         }
     }
     .medium {
         flex-basis: 33%;
         .img {
             background-position-x: 10px;
+            span {
+                margin-top: 43px;
+                font-size: 23px;
+            }
         }
     }
     .large {
         flex-basis: 44%;
         .img {
             background-position-x: 14px;
+            span {
+                margin-top: 56px;
+            }
         }
     }
     & > div {

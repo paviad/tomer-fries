@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Api.DAL;
 using Api.Models;
+using Data;
+using Data.DAL;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api {
@@ -15,14 +16,14 @@ namespace Api {
             _dc = dc;
         }
 
-        public async Task<DAL.UserData> EnsureGetUserData(Guid guid, string key) {
+        public async Task<UserData> EnsureGetUserData(Guid guid, string key) {
             var userData = await _dc.UserDatas.SingleOrDefaultAsync(x => x.UserId == guid.ToString() && x.Key == key);
 
             if (userData != null) {
                 return userData;
             }
 
-            userData = new DAL.UserData {
+            userData = new UserData {
                 UserId = guid.ToString(),
                 Key = key,
             };
@@ -36,7 +37,7 @@ namespace Api {
             var userData = await _dc.UserDatas.SingleOrDefaultAsync(x => x.UserId == guid.ToString() && x.Key == key);
 
             if (userData == null) {
-                userData = new DAL.UserData {
+                userData = new UserData {
                     UserId = guid.ToString(),
                     Key = key,
                 };

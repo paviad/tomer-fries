@@ -8,9 +8,13 @@ services:
 
   web:
     image: tomerfries-web
+    env_file:
+      - env_vars.txt
 
   api:
     image: tomerfries-api
+    env_file:
+      - env_vars.txt
 
   nginx:
     image: tomerfries-nginx
