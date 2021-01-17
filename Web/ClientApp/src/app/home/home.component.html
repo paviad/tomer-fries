@@ -1,8 +1,4 @@
-<button (click)="test()">test</button>
-<button (click)="test2()">admin test</button>
-<button (click)="login()">login</button>
-<button (click)="logout()">logout</button>
-<div [ngSwitch]="orderState" class="container" @parent>
+<div *ngIf="orderState>=0" [ngSwitch]="orderState" class="container" @parent>
     <div *ngSwitchCase="0" class="sizes center" @flyInOut>
         <div (click)="clickOrder(0)" class="small">
             <div class="img"><span>&#8362;5</span></div>
@@ -76,3 +72,4 @@
         </div>
     </div>
 </div>
+<button type="button" mat-raised-button color="accent" (click)="resetOrder()">התחל מחדש</button>

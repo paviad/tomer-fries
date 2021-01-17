@@ -7,6 +7,7 @@ const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/home' },
   { path: 'callback', component: CallbackComponent },
   { path: 'home', component: HomeComponent },
+  { path: 'track', component: HomeComponent, data: { track: true } },
 ];
 
 @NgModule({

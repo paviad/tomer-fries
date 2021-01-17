@@ -70,11 +70,13 @@ export class AuthService {
 
   refreshUser() {
     this.getUser().subscribe(r => {
+      console.log('user', r);
       return this.pUser.next(r);
     });
   }
 
   signinSilent() {
+    // tslint:disable-next-line: no-console
     this.mgr.signinSilent().then(r => this.pUser.next(r), err => console.debug('signinSilent failed', err));
   }
 
