@@ -107,7 +107,7 @@ namespace Api {
             services.AddDbContext<StarcraftContext>(
                 config => config
                     .EnableSensitiveDataLogging()
-                    .UseSqlServer(connectionString)
+                    .UseSqlServer(connectionString, b => b.MigrationsAssembly("Api"))
             );
 
             services.AddDbContext<DataProtectionKeysContext>(
