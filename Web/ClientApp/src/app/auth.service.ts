@@ -16,8 +16,8 @@ export class AuthService {
     client_id: 'interactive',
     client_secret: '49C1A7E1-0C79-4A89-A3D6-A37998FB86B0',
     redirect_uri: `${this.backendState.deployment.web}callback`,
-    response_type: "code",
-    scope: "openid profile email api",
+    response_type: 'code',
+    scope: 'openid profile email api',
     post_logout_redirect_uri: `${this.backendState.deployment.web}`,
     loadUserInfo: true,
     automaticSilentRenew: true,
@@ -41,6 +41,7 @@ export class AuthService {
     this.mgr = new UserManager(this.config);
     this.signinSilent();
     this.refreshUser();
+    // tslint:disable-next-line: no-string-literal
     window['silentRenew$'] = this.silentRenew$;
     this.silentRenew$.subscribe(r => {
       this.refreshUser();

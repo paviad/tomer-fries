@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from './auth.service';
+import { OrderNotificationService } from './order-notification.service';
 
 @Component({
   selector: 'app-root',
@@ -9,13 +9,5 @@ import { AuthService } from './auth.service';
 export class AppComponent {
   title = 'ClientApp';
 
-  constructor(private auth: AuthService) { }
-
-  login() {
-    this.auth.loginGoogle();
-  }
-
-  logout() {
-    this.auth.logout();
-  }
+  constructor(private notif: OrderNotificationService) { }
 }

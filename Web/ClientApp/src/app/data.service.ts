@@ -19,11 +19,12 @@ export class DataService {
   }
 
   getAllOrders(): Observable<Order[]> {
-    return this.http.post<Order[]>(this.url('GetAllOrders'), {});
+    return this.http.get<Order[]>(this.url('GetAllOrders'));
   }
 
   setSize(size: number): Observable<Order> {
-    return this.http.post<Order>(this.url('SetSize'), { size });
+    const params = new HttpParams().set('size', size.toString());
+    return this.http.post<Order>(this.url('SetSize'), {}, { params });
   }
 
   setData(crispiness: number, address: string, phoneNumber: string, notes: string): Observable<Order> {
@@ -49,5 +50,20 @@ export class DataService {
 
   resetOrder(): Observable<void> {
     return this.http.post<void>(this.url('ResetOrder'), {});
+  }
+
+  startPreparing(id: string) {
+    const params = new HttpParams().set('id', id);
+    return this.http.post<void>(this.url('StartPreparing'), {}, { params });
+  }
+
+  startDelivery(id: string) {
+    const params = new HttpParams().set('id', id);
+    return this.http.post<void>(this.url('StartDelivery'), {}, { params });
+  }
+
+  paymentReceived(id: string) {
+    const params = new HttpParams().set('id', id);
+    return this.http.post<void>(this.url('PaymentReceived'), {}, { params });
   }
 }

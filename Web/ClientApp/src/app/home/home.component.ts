@@ -6,11 +6,11 @@ import {
   animate,
   transition,
 } from '@angular/animations';
-import { interval, Subject } from 'rxjs';
 import { DataService } from '../data.service';
 import { AuthService } from '../auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { withLatestFrom } from 'rxjs/operators';
+import { OrderNotificationService } from '../order-notification.service';
 
 @Component({
   selector: 'app-home',
@@ -43,13 +43,14 @@ export class HomeComponent implements OnInit {
 
   trackingState = 0;
   track: boolean;
+  trackOrderId: string;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private notif: OrderNotificationService,
     private auth: AuthService,
     private svc: DataService) {
-    // interval(1000).subscribe(r => this.trackingState = (this.trackingState + 1) % 4);
   }
 
   ngOnInit(): void {
@@ -62,9 +63,16 @@ export class HomeComponent implements OnInit {
         this.track = !!data.track;
         if (data.track && paramMap.has('id')) {
           orderId = paramMap.get('id');
+          this.trackOrderId = orderId;
         }
         this.getOrderData(orderId);
       });
+    this.notif.orderTracking$.subscribe(r => {
+      if (!this.trackOrderId || r.id !== this.trackOrderId) {
+        return;
+      }
+      this.trackingState = r.trackingState;
+    });
   }
 
   private getOrderData(orderId?: string) {
@@ -126,7 +134,6 @@ export class HomeComponent implements OnInit {
   }
 
   confirmOrder() {
-    this.orderState = 3;
     this.svc.confirmOrder().subscribe(r => {
       this.router.navigate(['/track', { id: r.id }]);
     });

@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "~11.0.4",
     "@angular/platform-server": "^11.0.9",
     "@angular/router": "~11.0.4",
+    "@microsoft/signalr": "^5.0.2",
     "oidc-client": "^1.10.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",

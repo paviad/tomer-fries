@@ -1,0 +1,7 @@
+<button (click)="login()">login</button>
+<button (click)="logout()">logout</button>
+<div>
+    <div *ngFor="let o of orders$ | async">
+        <app-order [order]="o" (nextStep)="doAction(o)"></app-order>
+    </div>
+</div>

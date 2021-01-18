@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Security.Claims;
@@ -37,6 +38,7 @@ namespace Api {
                 .AddPolicyScheme("JwtThenAnon", "Jwt if available, Anon otherwise", options => {
                     options.ForwardDefaultSelector = context => {
                         var isAuthJwt = context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme).Result;
+                        Console.WriteLine($"-----------JwtThenAnon {isAuthJwt.Succeeded}");
                         return isAuthJwt.Succeeded ? JwtBearerDefaults.AuthenticationScheme : "AnonCookie";
                     };
                 })
@@ -67,6 +69,20 @@ namespace Api {
                     config.IncludeErrorDetails = true;
 
                     config.Events = new JwtBearerEvents {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            // If the request is for our hub...
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/api/ws"))) {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                                Console.WriteLine($"-------------Access token {accessToken}");
+                            }
+                            return Task.CompletedTask;
+                        },
                         OnTokenValidated = context => {
                             ((ClaimsIdentity) context.Principal?.Identity)?.AddClaim(new Claim("LoggedIn", "True"));
                             return Task.CompletedTask;
@@ -104,6 +120,10 @@ namespace Api {
             services.AddDataProtection()
                 .PersistKeysToDbContext<StarcraftContext>()
                 .SetApplicationName("TomerFries");
+
+            services.AddSignalR(options => {
+                options.EnableDetailedErrors = true;
+            });
         }
 
         private IEnumerable<SecurityKey> KeyResolver(string token, SecurityToken securitytoken, string kid, TokenValidationParameters validationparameters) {
@@ -131,7 +151,10 @@ namespace Api {
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllers();
+                endpoints.MapHub<OrderHub>("/ws");
+            });
         }
     }
 }

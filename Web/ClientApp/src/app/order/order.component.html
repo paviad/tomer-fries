@@ -1,0 +1,12 @@
+<mat-card>
+    <mat-card-content>
+        <div>{{sizeStr}}</div>
+        <div>{{order.address}}</div>
+        <div>{{order.phone}}</div>
+        <div>{{crispiness}}</div>
+        <div>{{order.notes}} </div>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-raised-button (click)="nextStep.emit()">{{action}}</button>
+    </mat-card-actions>
+</mat-card>
