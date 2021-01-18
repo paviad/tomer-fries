@@ -8,7 +8,6 @@ namespace Data {
         }
         
         public DbSet<UserData> UserDatas { get; set; }
-        public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Order> Orders { get; set; }
     }
 }

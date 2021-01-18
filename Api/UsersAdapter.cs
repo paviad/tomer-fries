@@ -11,9 +11,11 @@ using Microsoft.EntityFrameworkCore;
 namespace Api {
     public class UsersAdapter {
         private readonly StarcraftContext _dc;
+        private readonly ApplicationDbContext _idDc;
 
-        public UsersAdapter(StarcraftContext dc) {
+        public UsersAdapter(StarcraftContext dc, ApplicationDbContext idDc) {
             _dc = dc;
+            _idDc = idDc;
         }
 
         public async Task<UserData> EnsureGetUserData(Guid guid, string key) {
@@ -52,7 +54,7 @@ namespace Api {
         public async Task<IEnumerable<User>> GetUsers() {
             var userIds = await _dc.UserDatas.Select(x => x.UserId).Distinct().ToListAsync();
 
-            var names = await _dc.AppUsers
+            var names = await _idDc.UserClaims
                 .Where(x => x.ClaimType == "name")
                 .Where(x => userIds.Contains(x.UserId))
                 .ToDictionaryAsync(x => Guid.Parse(x.UserId), x => x.ClaimValue);
