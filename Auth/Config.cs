@@ -7,12 +7,17 @@ using IdentityServer4.Models;
 
 namespace Auth {
     public static class Config {
-        public static IEnumerable<IdentityResource> IdentityResources =>
-            new IdentityResource[] {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Email(),
-                new IdentityResources.Profile()
-            };
+        public static IEnumerable<IdentityResource> IdentityResources {
+            get {
+                var profile = new IdentityResources.Profile();
+                profile.UserClaims.Add("admin");
+                return new IdentityResource[] {
+                    new IdentityResources.OpenId(),
+                    new IdentityResources.Email(),
+                    profile
+                };
+            }
+        }
 
         public static IEnumerable<ApiScope> ApiScopes =>
             new[] {
@@ -44,10 +49,15 @@ namespace Auth {
 
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    RedirectUris = {"https://localhost:8081/callback", "https://localhost:8081/silent-renew.html"},
-                    FrontChannelLogoutUri = "https://localhost:8081/signout-oidc",
-                    PostLogoutRedirectUris = {"https://localhost:8081/"},
-                    AllowedCorsOrigins = {"https://localhost:8081"},
+                    RedirectUris = {
+                        "https://localhost:5433/callback",
+                        "https://localhost:5433/silent-renew.html",
+                        "https://tomerfries.hotslogs.com/callback",
+                        "https://tomerfries.hotslogs.com/silent-renew.html",
+                    },
+                    FrontChannelLogoutUri = "https://localhost:5433/signout-oidc",
+                    PostLogoutRedirectUris = {"https://localhost:5433/", "https://tomerfries.hotslogs.com/"},
+                    AllowedCorsOrigins = {"https://localhost:5433", "https://tomerfries.hotslogs.com"},
 
                     AllowOfflineAccess = true,
                     AllowedScopes = {"openid", "profile", "email", "api"}
