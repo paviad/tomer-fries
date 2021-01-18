@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(StarcraftContext))]
-    [Migration("20210118124808_InitOrders")]
+    [Migration("20210118131032_InitOrders")]
     partial class InitOrders
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,27 +20,6 @@ namespace Api.Migrations
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.2");
-
-            modelBuilder.Entity("Data.DAL.AppUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Is4_AspNetUserClaims");
-                });
 
             modelBuilder.Entity("Data.DAL.Order", b =>
                 {
