@@ -114,6 +114,10 @@ namespace Api {
                 config => config.UseSqlServer(connectionString)
             );
 
+            services.AddDbContext<ApplicationDbContext>(
+                config => config.UseSqlServer(connectionString)
+            );
+
             services.AddScoped<UsersAdapter>();
 
             services.AddAuthorization(options => {
