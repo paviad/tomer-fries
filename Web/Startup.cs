@@ -34,13 +34,13 @@ namespace Web {
                 });
 
             // Add a DbContext to store your Database Keys
-            services.AddDbContext<StarcraftContext>(options => {
+            services.AddDbContext<DataProtectionKeysContext>(options => {
                 var connectionString = Configuration.GetConnectionString("DefaultConnection");
                 options.UseSqlServer(connectionString);
             });
 
             services.AddDataProtection()
-                .PersistKeysToDbContext<StarcraftContext>()
+                .PersistKeysToDbContext<DataProtectionKeysContext>()
                 .SetApplicationName("TomerFries");
         }
 
