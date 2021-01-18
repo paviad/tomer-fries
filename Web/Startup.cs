@@ -36,7 +36,7 @@ namespace Web {
             // Add a DbContext to store your Database Keys
             services.AddDbContext<DataProtectionKeysContext>(options => {
                 var connectionString = Configuration.GetConnectionString("DefaultConnection");
-                options.UseSqlServer(connectionString);
+                options.UseSqlServer(connectionString, b => b.MigrationsAssembly("Web"));
             });
 
             services.AddDataProtection()

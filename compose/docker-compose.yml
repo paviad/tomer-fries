@@ -19,12 +19,11 @@ services:
   nginx:
     image: tomerfries-nginx
     ports:
-      - "8080:80"
-      - "8081:443"
+      - "5443:443"
 
   sql:
     image: tomerfries-sql
     volumes:
-      - /run/desktop/mnt/host/c/MyProjects/Tomerfries/App/sql/store:/var/opt/mssql/data
+      - d:\TomerFries\App\sql\store:/var/opt/mssql/data
     ports:
       - "8633:1433"
