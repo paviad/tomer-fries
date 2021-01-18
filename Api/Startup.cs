@@ -69,8 +69,7 @@ namespace Api {
                     config.IncludeErrorDetails = true;
 
                     config.Events = new JwtBearerEvents {
-                        OnMessageReceived = context =>
-                        {
+                        OnMessageReceived = context => {
                             var accessToken = context.Request.Query["access_token"];
 
                             // If the request is for our hub...
@@ -84,7 +83,7 @@ namespace Api {
                             return Task.CompletedTask;
                         },
                         OnTokenValidated = context => {
-                            ((ClaimsIdentity) context.Principal?.Identity)?.AddClaim(new Claim("LoggedIn", "True"));
+                            ((ClaimsIdentity)context.Principal?.Identity)?.AddClaim(new Claim("LoggedIn", "True"));
                             return Task.CompletedTask;
                         },
                     };
@@ -111,6 +110,10 @@ namespace Api {
                     .UseSqlServer(connectionString)
             );
 
+            services.AddDbContext<DataProtectionKeysContext>(
+                config => config.UseSqlServer(connectionString)
+            );
+
             services.AddScoped<UsersAdapter>();
 
             services.AddAuthorization(options => {
@@ -118,7 +121,7 @@ namespace Api {
             });
 
             services.AddDataProtection()
-                .PersistKeysToDbContext<StarcraftContext>()
+                .PersistKeysToDbContext<DataProtectionKeysContext>()
                 .SetApplicationName("TomerFries");
 
             services.AddSignalR(options => {
