@@ -9,6 +9,7 @@ import { Order } from '../models/order';
 export class OrderComponent implements OnInit {
   @Input() order: Order;
   @Output() nextStep = new EventEmitter<void>();
+  @Output() cancelOrder = new EventEmitter<void>();
 
   public get sizeStr(): string {
     return ['קטן', 'בינוני', 'גדול'][this.order.size];

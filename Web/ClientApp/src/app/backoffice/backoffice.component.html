@@ -2,6 +2,6 @@
 <button (click)="logout()">logout</button>
 <div>
     <div *ngFor="let o of orders$ | async">
-        <app-order [order]="o" (nextStep)="doAction(o)"></app-order>
+        <app-order [order]="o" (nextStep)="doAction(o)" (cancelOrder)="cancelOrder(o)"></app-order>
     </div>
 </div>

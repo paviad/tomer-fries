@@ -173,6 +173,21 @@ namespace Api.Controllers {
             return rc;
         }
 
+        [Authorize(Policy = "Admin")]
+        [HttpPost]
+        public async Task CancelOrder(Guid id) {
+            var order = await GetOrderForAdmin(id);
+
+            if (order == null) {
+                return;
+            }
+
+            _dc.Orders.Remove(order);
+            await _dc.SaveChangesAsync();
+
+            await _hub.Clients.All.ResetOrder(id);
+        }
+
         private static Order ConvertFromDb(Data.DAL.Order order) {
             if (order == null) {
                 return null;
@@ -195,7 +210,10 @@ namespace Api.Controllers {
 
         private async Task<(Data.DAL.Order, bool)> EnsureGetOrder(Guid userId) {
             var userIdStr = userId.ToString();
-            var order = await _dc.Orders.Where(x => x.UserId == userIdStr && x.State < 3).SingleOrDefaultAsync();
+            var order = await _dc.Orders
+                .Where(x => x.UserId == userIdStr && x.TrackingState < 3)
+                .OrderByDescending(x => x.DateCreated)
+                .FirstOrDefaultAsync();
             var created = false;
 
             if (order == null) {

@@ -13,6 +13,12 @@ export class OrderNotificationService {
   private pOrderTracking = new Subject<Order>();
   orderTracking$: Observable<Order> = this.pOrderTracking.asObservable();
 
+  private pOrderReset = new Subject<string>();
+  orderReset$: Observable<string> = this.pOrderReset.asObservable();
+
+  private pOrderUpdate = new Subject<Order>();
+  orderUpdate$: Observable<Order> = this.pOrderUpdate.asObservable();
+
   private connection: signalR.HubConnection;
 
   constructor(private auth: AuthService) {
@@ -38,6 +44,7 @@ export class OrderNotificationService {
 
     connection.on('updateOrder', order => {
       console.log('updateOrder', order);
+      this.pOrderUpdate.next(order);
     });
 
     connection.on('updateOrderTracking', order => {
@@ -47,6 +54,7 @@ export class OrderNotificationService {
 
     connection.on('resetOrder', order => {
       console.log('resetOrder', order);
+      this.pOrderReset.next(order);
     });
 
     this.connection = connection;

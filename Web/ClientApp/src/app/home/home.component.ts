@@ -11,6 +11,7 @@ import { AuthService } from '../auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { withLatestFrom } from 'rxjs/operators';
 import { OrderNotificationService } from '../order-notification.service';
+import { Order } from '../models/order';
 
 @Component({
   selector: 'app-home',
@@ -43,7 +44,7 @@ export class HomeComponent implements OnInit {
 
   trackingState = 0;
   track: boolean;
-  trackOrderId: string;
+  orderId: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -63,28 +64,51 @@ export class HomeComponent implements OnInit {
         this.track = !!data.track;
         if (data.track && paramMap.has('id')) {
           orderId = paramMap.get('id');
-          this.trackOrderId = orderId;
+          this.orderId = orderId;
         }
         this.getOrderData(orderId);
       });
     this.notif.orderTracking$.subscribe(r => {
-      if (!this.trackOrderId || r.id !== this.trackOrderId) {
+      if (!this.orderId || r.id !== this.orderId) {
         return;
       }
       this.trackingState = r.trackingState;
+    });
+
+    this.notif.orderReset$.subscribe(r => {
+      if (!this.orderId || r !== this.orderId) {
+        return;
+      }
+      this.getOrderData();
+    });
+
+    this.notif.orderUpdate$.subscribe(r => {
+      if (!this.orderId || r.id !== this.orderId) {
+        return;
+      }
+      this.updateOrderData(r);
     });
   }
 
   private getOrderData(orderId?: string) {
     this.svc.getOrder(orderId).subscribe(r => {
-      this.orderState = r.state;
-      this.address = r.address;
-      this.phoneNumber = r.phone;
-      this.crispiness = r.isCrispy ? 1 : 2;
-      this.notes = r.notes;
-      this.sizeSelected = r.size;
-      this.trackingState = r.trackingState;
+      this.updateOrderData(r);
     });
+  }
+
+  private updateOrderData(r: Order) {
+    this.orderId = r.id;
+    this.orderState = r.state;
+    this.address = r.address;
+    this.phoneNumber = r.phone;
+    this.crispiness = r.isCrispy ? 1 : 2;
+    this.notes = r.notes;
+    this.sizeSelected = r.size;
+    this.trackingState = r.trackingState;
+
+    if (r.state === 3) {
+      this.router.navigate(['/track', { id: r.id }]);
+    }
   }
 
   clickOrder(size: number) {

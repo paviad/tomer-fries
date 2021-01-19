@@ -66,4 +66,9 @@ export class DataService {
     const params = new HttpParams().set('id', id);
     return this.http.post<void>(this.url('PaymentReceived'), {}, { params });
   }
+
+  cancelOrder(id: string) {
+    const params = new HttpParams().set('id', id);
+    return this.http.post<void>(this.url('CancelOrder'), {}, { params });
+  }
 }

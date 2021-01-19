@@ -21,24 +21,29 @@ export class BackofficeComponent implements OnInit {
 
   ngOnInit(): void {
 
+    const m1 = this.notif.orderTracking$.pipe(map(r => ['update', r] as const));
+    const m2 = this.notif.orderReset$.pipe(map(r => ['reset', r] as const));
+    const m = merge(m1, m2);
+
     this.orders$ = this.svc.getAllOrders().pipe(
-      switchMap(r => this.notif.orderTracking$.pipe(
+      switchMap(r => m.pipe(
         scan((acc, v) => this.combineMap(acc, v), r),
         startWith(r),
       ))
     );
   }
 
-  combineMap(orders: Order[], order: Order) {
+  combineMap(orders: Order[], op: readonly ['update', Order] | readonly ['reset', string]) {
     const omap = orders.reduce((acc, v) => Object.assign(acc, { [v.id]: v }), {});
-    if (!order.id) {
-      return orders;
-    }
-
-    if (order.trackingState >= 3) {
-      delete omap[order.id];
+    if (op[0] === 'reset') {
+      delete omap[op[1]];
     } else {
-      omap[order.id] = order;
+      const order = op[1];
+      if (order.trackingState >= 3) {
+        delete omap[order.id];
+      } else {
+        omap[order.id] = order;
+      }
     }
     return Object.values(omap) as Order[];
   }
@@ -63,5 +68,12 @@ export class BackofficeComponent implements OnInit {
         this.svc.paymentReceived(order.id).subscribe();
         break;
     }
+  }
+
+  cancelOrder(order: Order) {
+    if (!confirm('אתה בטוח שאתה רוצה לבטל את ההזמנה?')) {
+      return;
+    }
+    this.svc.cancelOrder(order.id).subscribe();
   }
 }
