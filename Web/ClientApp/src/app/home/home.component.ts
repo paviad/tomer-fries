@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   trigger,
   state,
@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { withLatestFrom } from 'rxjs/operators';
 import { OrderNotificationService } from '../order-notification.service';
 import { Order } from '../models/order';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -33,7 +34,7 @@ import { Order } from '../models/order';
     ])
   ],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   orderState?: number;
   sizeSelected?: number;
 
@@ -46,6 +47,8 @@ export class HomeComponent implements OnInit {
   track: boolean;
   orderId: string;
 
+  subs: Subscription[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -55,7 +58,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.data.pipe(
+    const s1 = this.route.data.pipe(
       withLatestFrom(this.route.paramMap)
     )
       .subscribe(([data, paramMap]) => {
@@ -68,31 +71,43 @@ export class HomeComponent implements OnInit {
         }
         this.getOrderData(orderId);
       });
-    this.notif.orderTracking$.subscribe(r => {
+
+    const s2 = this.notif.orderTracking$.subscribe(r => {
       if (!this.orderId || r.id !== this.orderId) {
         return;
       }
       this.trackingState = r.trackingState;
     });
 
-    this.notif.orderReset$.subscribe(r => {
+    const s3 = this.notif.orderReset$.subscribe(r => {
       if (!this.orderId || r !== this.orderId) {
         return;
       }
+      alert('הזמנתך בוטלה ע"י תומר!');
       this.getOrderData();
     });
 
-    this.notif.orderUpdate$.subscribe(r => {
+    const s4 = this.notif.orderUpdate$.subscribe(r => {
       if (!this.orderId || r.id !== this.orderId) {
         return;
       }
       this.updateOrderData(r);
     });
+
+    this.subs.push(s1, s2, s3, s4);
+  }
+
+  ngOnDestroy() {
+    this.subs.forEach(x => x.unsubscribe());
   }
 
   private getOrderData(orderId?: string) {
     this.svc.getOrder(orderId).subscribe(r => {
-      this.updateOrderData(r);
+      if (!r) {
+        this.router.navigate(['/home']);
+      } else {
+        this.updateOrderData(r);
+      }
     });
   }
 
@@ -101,7 +116,7 @@ export class HomeComponent implements OnInit {
     this.orderState = r.state;
     this.address = r.address;
     this.phoneNumber = r.phone;
-    this.crispiness = r.isCrispy ? 1 : 2;
+    this.crispiness = typeof (r.isCrispy) !== 'undefined' && (r.isCrispy ? 1 : 2);
     this.notes = r.notes;
     this.sizeSelected = r.size;
     this.trackingState = r.trackingState;

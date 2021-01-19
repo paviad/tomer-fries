@@ -15,22 +15,24 @@
     </div>
 
     <div *ngSwitchCase="1" class="address center" @flyInOut>
-        <form class="example-form" novalidate standalone>
-            <mat-radio-group name="tomer-fries-crispiness" [(ngModel)]="crispiness" aria-label="Select an option">
+        <form class="example-form" standalone>
+            <mat-radio-group name="tomer-fries-crispiness" [(ngModel)]="crispiness" aria-label="Select an option"
+                required [class.invalid]="!crispiness">
                 <mat-radio-button value="1">קריספי</mat-radio-button>
                 <mat-radio-button value="2">רך</mat-radio-button>
+                <mat-error *ngIf="!crispiness">חובה *</mat-error>
             </mat-radio-group>
 
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="example-full-width" [class.invalid]="!address">
                 <mat-label>לאן לשלוח?</mat-label>
                 <input matInput name="tomer-fries-address" placeholder="כתובת או מספר דירה" value=""
-                    [(ngModel)]="address">
+                    [(ngModel)]="address" required>
             </mat-form-field>
 
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="example-full-width" [class.invalid]="!phoneNumber">
                 <mat-label>מס' טלפון לאישור</mat-label>
                 <input matInput name="tomer-fries-phone" placeholder="דוגמא: 053-888888" value=""
-                    [(ngModel)]="phoneNumber">
+                    [(ngModel)]="phoneNumber" required>
             </mat-form-field>
 
             <mat-form-field class="example-full-width">
@@ -38,7 +40,11 @@
                 <textarea name="tomer-fries-notes" matInput placeholder="" [(ngModel)]="notes"></textarea>
             </mat-form-field>
 
-            <button type="button" [disabled]="!isStep1Valid()" mat-raised-button color="accent" (click)="clickSummary()">עבור לשלב הבא</button>
+            <div class="button-bar">
+                <button type="button" [disabled]="!isStep1Valid()" mat-raised-button color="accent"
+                    (click)="clickSummary()">עבור לשלב הבא</button>
+                <button type="button" mat-raised-button color="accent" (click)="resetOrder()">התחל מחדש</button>
+            </div>
         </form>
     </div>
 
@@ -56,20 +62,28 @@
             <h2>הערות</h2>
             <div class="data">{{notes}}</div>
         </div>
-        <div>
+        <div class="button-bar">
             <button mat-raised-button color="accent" (click)="confirmOrder()">אישור הזמנה!</button>
+            <button type="button" mat-raised-button color="accent" (click)="resetOrder()">התחל מחדש</button>
         </div>
     </div>
 
     <div *ngSwitchCase="3" class="track center" @flyInOut>
         <h1>הזמנתך התקבלה בהצלחה!</h1>
+        <div class="small">
+            {{getCrispiness()}} - {{getSize()}} - &#8362;{{getPrice()}}
+        </div>
         <h2>מעקב הזמנה</h2>
         <div class="tracking">
             <div class="tracking-step" [class.active]="trackingState===0" [class.complete]="trackingState>0">ממתין</div>
             <div class="tracking-step" [class.active]="trackingState===1" [class.complete]="trackingState>1">בהכנה</div>
             <div class="tracking-step" [class.active]="trackingState===2" [class.complete]="trackingState>2">בדרך</div>
-            <div class="tracking-step" [class.active]="trackingState===3" [class.complete]="trackingState>3">הושלם!</div>
+            <div class="tracking-step" [class.active]="trackingState===3" [class.complete]="trackingState>3">הושלם!
+            </div>
+        </div>
+        <div class="one-button">
+            <a type="button" routerLink="/home" *ngIf="trackingState===3" mat-raised-button color="accent">חזור לדף
+                הבית</a>
         </div>
     </div>
 </div>
-<button type="button" mat-raised-button color="accent" (click)="resetOrder()">התחל מחדש</button>

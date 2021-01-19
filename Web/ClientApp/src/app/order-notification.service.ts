@@ -48,7 +48,7 @@ export class OrderNotificationService {
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(`/api/ws`, { accessTokenFactory: () => this.accessToken })
-      .configureLogging(signalR.LogLevel.Information)
+      .configureLogging(signalR.LogLevel.Warning)
       .build();
 
     try {

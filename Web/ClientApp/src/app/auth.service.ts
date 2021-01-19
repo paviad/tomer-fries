@@ -29,6 +29,8 @@ export class AuthService {
   user$: Observable<User> = this.pUser.asObservable();
   silentRenew$ = new Subject<boolean>();
 
+  token = '-';
+
   constructor(
     private http: HttpClient,
     private backendState: BackendState,
@@ -48,7 +50,7 @@ export class AuthService {
     });
   }
 
-  private getUser() {
+  private getUser(): Observable<User> {
     if (isPlatformServer(this.platformId)) {
       return of(null);
     }
@@ -72,7 +74,10 @@ export class AuthService {
   refreshUser() {
     this.getUser().subscribe(r => {
       console.log('user', r);
-      return this.pUser.next(r);
+      if (r.access_token !== this.token) {
+        this.token = r.access_token;
+        return this.pUser.next(r);
+      }
     });
   }
 

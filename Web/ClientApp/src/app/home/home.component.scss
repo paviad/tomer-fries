@@ -79,9 +79,26 @@
     width: 100%;
 }
 
+.button-bar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.one-button {
+    margin-top: 30px;
+    text-align: center;
+}
+
 .address {
     .mat-radio-button ~ .mat-radio-button {
         margin-right: 16px;
+    }
+    .mat-error {
+        display: inline;
+        vertical-align: bottom;
+        &::before {
+            content: " - ";
+        }
     }
 }
 
@@ -113,6 +130,10 @@
 
 .track {
     flex-direction: column;
+    .small {
+        text-align: center;
+        font-size: smaller;
+    }
     .tracking {
         display: flex;
         .tracking-step {
