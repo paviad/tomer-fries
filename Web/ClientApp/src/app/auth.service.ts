@@ -87,7 +87,11 @@ export class AuthService {
     }
     this.mgr.signinRedirectCallback().then(user => {
       this.refreshUser();
-      this.router.navigateByUrl(user.state);
+      if (user.profile.admin === 'True') {
+        this.router.navigate(['/backoffice']);
+      } else {
+        this.router.navigateByUrl(user.state);
+      }
     }).catch(e => {
       console.error(e);
     });
