@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { Observable, Subject } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { Order } from './models/order';
 
@@ -9,6 +10,8 @@ import { Order } from './models/order';
 })
 export class OrderNotificationService {
   private accessToken: string;
+
+  private pReconnect = new Subject<void>();
 
   private pOrderTracking = new Subject<Order>();
   orderTracking$: Observable<Order> = this.pOrderTracking.asObservable();
@@ -22,13 +25,25 @@ export class OrderNotificationService {
   private connection: signalR.HubConnection;
 
   constructor(private auth: AuthService) {
-    this.auth.getAccessToken().subscribe(r => this.accessToken = r);
-    this.auth.getUser().subscribe(r => this.reconnect());
+    this.auth.getAccessToken()
+      .pipe(distinctUntilChanged())
+      .subscribe(r => {
+        console.log('new access token', r);
+        this.accessToken = r;
+        this.reconnect();
+      });
+    // this.auth.user$.subscribe(r => this.reconnect());
+    this.pReconnect.subscribe(async () => await this.reconnectInternal());
   }
 
   private reconnect() {
+    this.pReconnect.next();
+  }
+
+  private async reconnectInternal() {
+    console.log('reconnecting');
     if (this.connection) {
-      this.connection.stop();
+      await this.connection.stop();
     }
 
     const connection = new signalR.HubConnectionBuilder()
@@ -36,11 +51,14 @@ export class OrderNotificationService {
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
-    connection.start()
-      .then(() => {
-        console.log('connections started');
-      })
-      .catch(err => console.log('error', err));
+    try {
+
+      await connection.start();
+      console.log('connections started');
+    }
+    catch (err) {
+      console.log('error', err);
+    }
 
     connection.on('updateOrder', order => {
       console.log('updateOrder', order);

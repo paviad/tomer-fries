@@ -48,7 +48,7 @@ export class AuthService {
     });
   }
 
-  getUser() {
+  private getUser() {
     if (isPlatformServer(this.platformId)) {
       return of(null);
     }
@@ -98,6 +98,6 @@ export class AuthService {
   }
 
   getAccessToken() {
-    return this.getUser().pipe(map(r => r && r.access_token));
+    return this.user$.pipe(map(r => r && r.access_token));
   }
 }
