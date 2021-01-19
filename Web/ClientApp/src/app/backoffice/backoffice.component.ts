@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
-import { map, startWith, withLatestFrom } from 'rxjs/operators';
+import { combineLatest, merge, Observable } from 'rxjs';
+import { map, mergeAll, scan, startWith, switchMap, withLatestFrom } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { DataService } from '../data.service';
 import { Order } from '../models/order';
@@ -21,21 +21,26 @@ export class BackofficeComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.orders$ = combineLatest([this.notif.orderTracking$.pipe(startWith({ id: null } as Order)), this.svc.getAllOrders()]).pipe(
-      map(([order, orders]) => {
-        const omap = orders.reduce((acc, v) => Object.assign(acc, { [v.id]: v }), {});
-        if (!order.id) {
-          return orders;
-        }
-
-        if (order.trackingState >= 3) {
-          delete omap[order.id];
-        } else {
-          omap[order.id] = order;
-        }
-        return Object.values(omap);
-      })
+    this.orders$ = this.svc.getAllOrders().pipe(
+      switchMap(r => this.notif.orderTracking$.pipe(
+        scan((acc, v) => this.combineMap(acc, v), r),
+        startWith(r),
+      ))
     );
+  }
+
+  combineMap(orders: Order[], order: Order) {
+    const omap = orders.reduce((acc, v) => Object.assign(acc, { [v.id]: v }), {});
+    if (!order.id) {
+      return orders;
+    }
+
+    if (order.trackingState >= 3) {
+      delete omap[order.id];
+    } else {
+      omap[order.id] = order;
+    }
+    return Object.values(omap) as Order[];
   }
 
   login() {
