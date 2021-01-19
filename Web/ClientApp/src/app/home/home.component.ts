@@ -83,7 +83,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (!this.orderId || r !== this.orderId) {
         return;
       }
-      alert('הזמנתך בוטלה ע"י תומר!');
+      if (this.track) {
+        alert('הזמנתך בוטלה ע"י תומר!');
+      }
       this.getOrderData();
     });
 
