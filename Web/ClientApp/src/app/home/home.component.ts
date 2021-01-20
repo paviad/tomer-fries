@@ -120,7 +120,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.orderState = r.state;
     this.address = r.address;
     this.phoneNumber = r.phone;
-    this.crispiness = typeof (r.isCrispy) !== 'undefined' && (r.isCrispy ? 1 : 2);
+    if (typeof (r.isCrispy) === 'boolean') {
+      this.crispiness = r.isCrispy ? 1 : 2;
+    }
     this.notes = r.notes;
     this.sizeSelected = r.size;
     this.trackingState = r.trackingState;

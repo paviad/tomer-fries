@@ -16,7 +16,6 @@
 
     <div *ngSwitchCase="1" class="address center" @flyInOut>
         <form class="example-form" standalone>
-            {{crispiness}}
             <mat-radio-group name="tomer-fries-crispiness" [(ngModel)]="crispiness" aria-label="Select an option"
                 required [class.invalid]="!crispiness">
                 <mat-radio-button value="1">קריספי</mat-radio-button>

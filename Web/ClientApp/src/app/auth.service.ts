@@ -74,7 +74,6 @@ export class AuthService {
 
   refreshUser() {
     this.getUser().subscribe(r => {
-      console.log('user', r);
       if (r && r.access_token !== this.token) {
         this.token = r.access_token;
       } else {
@@ -106,7 +105,6 @@ export class AuthService {
   }
 
   getAccessToken() {
-    console.log('getAccessToken');
     return this.user$.pipe(map(r => r && r.access_token));
   }
 }
