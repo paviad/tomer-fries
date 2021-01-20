@@ -22,7 +22,8 @@ function app(url: string, stateJson: string) {
     extraProviders: [
       { provide: BACKEND_STATE, useValue: backendState }
     ]
-  }).then(x => writeFileSync('out.html', x));
+  }).then(x => writeFileSync('out.html', x))
+    .catch(err => console.error('renderModule', err));
 }
 
 app(process.argv[2], process.argv[3]);

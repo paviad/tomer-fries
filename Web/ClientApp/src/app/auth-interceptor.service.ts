@@ -23,6 +23,7 @@ export class AuthInterceptorService {
   // and adds it to the request in case it's targeted at the same origin as the
   // single page application.
   private processRequestWithToken(token: string, req: HttpRequest<any>, next: HttpHandler) {
+    console.log('processRequestWithToken', token, req);
     if (!!token && (this.isSameOriginUrl(req) || this.isApiUrl(req))) {
       req = req.clone({
         setHeaders: {

@@ -104,7 +104,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private getOrderData(orderId?: string) {
+    console.log('getting data', orderId);
     this.svc.getOrder(orderId).subscribe(r => {
+      console.log('got data', r);
       if (!r) {
         this.router.navigate(['/home']);
       } else {

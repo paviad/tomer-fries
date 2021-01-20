@@ -1,7 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { UserManager, User, UserManagerSettings } from 'oidc-client';
 import { from, Observable, ReplaySubject, Subject, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformServer } from '@angular/common';
 import { Router } from '@angular/router';
@@ -38,6 +38,7 @@ export class AuthService {
     private router: Router) {
 
     if (isPlatformServer(platformId)) {
+      this.refreshUser();
       return;
     }
     this.mgr = new UserManager(this.config);
@@ -76,10 +77,10 @@ export class AuthService {
       console.log('user', r);
       if (r && r.access_token !== this.token) {
         this.token = r.access_token;
-        return this.pUser.next(r);
       } else {
         this.token = null;
       }
+      return this.pUser.next(r);
     });
   }
 
@@ -105,6 +106,7 @@ export class AuthService {
   }
 
   getAccessToken() {
+    console.log('getAccessToken');
     return this.user$.pipe(map(r => r && r.access_token));
   }
 }
