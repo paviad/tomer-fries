@@ -74,9 +74,11 @@ export class AuthService {
   refreshUser() {
     this.getUser().subscribe(r => {
       console.log('user', r);
-      if (r.access_token !== this.token) {
+      if (r && r.access_token !== this.token) {
         this.token = r.access_token;
         return this.pUser.next(r);
+      } else {
+        this.token = null;
       }
     });
   }
