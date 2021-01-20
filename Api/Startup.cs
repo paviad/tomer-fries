@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Data;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -44,6 +46,16 @@ namespace Api {
                 })
                 .AddCookie("AnonCookie", options => {
                     options.Cookie.Path = "/";
+                    options.Events = new CookieAuthenticationEvents {
+                        OnRedirectToAccessDenied = context => {
+                            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                            return Task.CompletedTask;
+                        },
+                        OnRedirectToLogin = context => {
+                            context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                            return Task.CompletedTask;
+                        },
+                    };
                 })
                 .AddJwtBearer(config => {
                     config.Authority = "http://auth/auth";
