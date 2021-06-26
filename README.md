@@ -21,5 +21,12 @@ This is just a banal API, just for demonstration purposes.
 
 # Database Creation
 
-There is a file in the root called `database.sql` which includes a database creation script along with data insert statements. There is some
-unneeded leftover data there from past tests, but most of it is used.
+First run `docker compose up -d` then change into the `seed` directory and run `seed.cmd` it will run the `db.sql` file into the sql database.
+
+# Secrets
+
+Generate a new project at https://console.cloud.google.com/projectcreate.
+
+Create a new credential of type "OAuth client ID", select "Web Application" as the type, and then add `https://localhost:8081` to the "Authorized JavaScript origins" and add `https://localhost:8081/auth/signin-google` to the "Authorized redirect URIs".
+
+Finally, rename `compose/secrets.blank.txt` to `compose/secrets.txt` and then enter the new project client id and client secret into that file.
