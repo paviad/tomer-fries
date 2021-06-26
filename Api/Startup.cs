@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -106,6 +107,7 @@ namespace Api {
                     builder.AllowAnyHeader();
                     builder.AllowAnyMethod();
                     builder.WithOrigins("http://localhost:4200");
+                    builder.WithOrigins("http://localhost:8080");
                     builder.WithOrigins("https://localhost:8081");
                     builder.WithOrigins("https://tomer-fries.azurewebsites.net");
                     builder.WithOrigins("https://tomerfries.com");

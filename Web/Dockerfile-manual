@@ -1,10 +1,7 @@
-FROM build-env AS build
-
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
-# RUN apt-get update
+RUN apt-get update
 
 ENV NODE_VERSION=14.17.0
-RUN apt-get update
 RUN apt-get install -y curl
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
 ENV NVM_DIR=/root/.nvm
@@ -23,6 +20,6 @@ RUN npm --version
 #  && sudo make install
 
 WORKDIR /publish
-COPY --from=build /publish/web .
+COPY . .
 
 CMD ["dotnet", "Web.dll"]

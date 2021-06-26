@@ -2,27 +2,40 @@ version: "3.7"
 services:
 
   auth:
+    build: 
+      context: ../empty
+      dockerfile: ../Auth/Dockerfile
     image: tomerfries-auth
     env_file:
       - env_vars.txt
+      - secrets.txt
 
   web:
+    build: 
+      context: ../empty
+      dockerfile: ../Web/Dockerfile
     image: tomerfries-web
     env_file:
       - env_vars.txt
 
   api:
+    build: 
+      context: ../empty
+      dockerfile: ../Api/Dockerfile
     image: tomerfries-api
     env_file:
       - env_vars.txt
+      - secrets.txt
 
   nginx:
+    build: ../nginx
     image: tomerfries-nginx
     ports:
       - "8080:80"
       - "8081:443"
 
   sql:
+    build: ../sql
     image: tomerfries-sql
     volumes:
       - /run/desktop/mnt/host/c/MyProjects/Tomerfries/App/sql/store:/var/opt/mssql/data

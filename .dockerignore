@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+**/store/
+**/compose/
+**/database.sql
+**/.vs/
+**/.git/
+**/publish/
+**/node_modules/

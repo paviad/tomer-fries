@@ -1,6 +1,4 @@
-FROM build-env AS build
-
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /publish
-COPY --from=build /publish/auth .
+COPY . .
 CMD ["dotnet", "Auth.dll"]
