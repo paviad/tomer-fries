@@ -342,6 +342,5 @@ Web/ClientApp/out.html
 sql/store 
 compose/dbpass.txt 
 Web/tmp/ 
-compose/env_vars.txt
 compose/env_vars_azure.txt
 compose/secrets.txt 

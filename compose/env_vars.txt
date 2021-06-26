@@ -1,0 +1,6 @@
+Deployment__Api=https://localhost:8081/api/
+Deployment__Authority=https://localhost:8081/auth/
+Deployment__Web=https://localhost:8081/
+IdentityServer__BasePath=/auth
+IdentityServer__Origin=https://localhost:8081
+ConnectionStrings__DefaultConnection=Data Source=sql;Initial Catalog=master;User ID=sa;Password=Linalool1coalify0tammuz;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
