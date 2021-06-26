@@ -1,27 +1,20 @@
 # What is this?
 
-First of all, this is a work in progress, it is messy and unclean, but it works and strives to follow best practices.
+This is a complete app with authentication which includes:
 
-Secondly, this is a Visual Studio 2019 (version 16.8) solution which includes the following projects:
 1. Auth - A web app project built around IdentityServer4 implementing OAuth2.0 with support for local and external logins
 2. Web - A frontend web app project based on Angular
 3. Api - A backend API web app project
+4. Sql - An sql server
+5. Nginx - An nginx reverse proxy
 
-## Auth
+# Building
 
-This project is a .NET 5 project using IdentityServer4 (version 4.1.1) which implements OAuth2.0 with users in a local database, as well as supporting external login (e.g. Google)
-
-## Web
-
-This is an .NET 5 project which wraps an Angular 11 app. **Server-side rendering is fully supported with server state transfer.**
-
-## Api
-
-This is just a banal API, just for demonstration purposes.
+Run `build.cmd` at the root directory of the repository. It will take a few minutes to complete. Then change into the `compose` directory and run `docker compose up -d`. Wait a minute or two for SQL to be ready, then navigate to https://localhost:8081
 
 # Database Creation
 
-First run `docker compose up -d` then change into the `seed` directory and run `seed.cmd` it will run the `db.sql` file into the sql database.
+After running `docker compose up -d` and waiting a minute or two for sql to be ready for connections, change into the `seed` directory and run `seed.cmd` it will run the `db.sql` file into the sql database.
 
 # Secrets
 
@@ -29,4 +22,6 @@ Generate a new project at https://console.cloud.google.com/projectcreate.
 
 Create a new credential of type "OAuth client ID", select "Web Application" as the type, and then add `https://localhost:8081` to the "Authorized JavaScript origins" and add `https://localhost:8081/auth/signin-google` to the "Authorized redirect URIs".
 
-Finally, rename `compose/secrets.blank.txt` to `compose/secrets.txt` and then enter the new project client id and client secret into that file.
+Then, rename `compose/secrets.blank.txt` to `compose/secrets.txt` and then enter the new project client id and client secret into that file.
+
+Finally, run `docker compose up -d` again in the `compose` directory.
